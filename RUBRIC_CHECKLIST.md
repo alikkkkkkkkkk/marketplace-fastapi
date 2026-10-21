@@ -1,0 +1,48 @@
+# Проверка на 10/10
+
+- [x] POST /products
+- [x] GET /products/{id}
+- [x] GET /products с page/size/status/category
+- [x] PUT /products/{id}
+- [x] DELETE /products/{id} как ARCHIVED
+- [x] ProductCreate / ProductUpdate / ProductResponse отдельно
+- [x] decimal/date-time formats, enum, nullable, required
+- [x] OpenAPI codegen одной командой
+- [x] generated/ в .gitignore
+- [x] generated handlers + DTO реально используются
+- [x] PostgreSQL
+- [x] Flyway
+- [x] index products(status)
+- [x] automatic created_at/updated_at
+- [x] единый ErrorResponse
+- [x] весь обязательный error catalog
+- [x] validation constraints находятся в OpenAPI
+- [x] validation ошибки превращаются в VALIDATION_ERROR + details.violations
+- [x] rate limit create/update
+- [x] один active order
+- [x] ACTIVE product check
+- [x] stock check
+- [x] stock reservation в одной транзакции
+- [x] price snapshot
+- [x] promo validity / min amount / percentage / fixed amount
+- [x] promo current_uses
+- [x] update order returns old stock then reserves new stock atomically
+- [x] promo removal on update below min amount
+- [x] cancel returns stock and promo use
+- [x] state machine + INVALID_STATE_TRANSITION
+- [x] JSON logging each request
+- [x] X-Request-Id
+- [x] mutation request body logging + masking
+- [x] JWT register/login/refresh
+- [x] access 20 min / refresh 14 days by default
+- [x] all non-auth endpoints protected
+- [x] TOKEN_EXPIRED / TOKEN_INVALID / REFRESH_TOKEN_INVALID
+- [x] USER / SELLER / ADMIN
+- [x] role claim in JWT
+- [x] seller ownership for products
+- [x] order ownership
+- [x] ACCESS_DENIED
+- [x] security scheme + role descriptions in OpenAPI
+- [x] E2E script
+- [x] DB SELECT script
+- [x] defense theory cheat sheet

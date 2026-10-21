@@ -1,0 +1,73 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: marketplace
+      POSTGRES_USER: marketplace
+      POSTGRES_PASSWORD: marketplace
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketplace -d marketplace"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  flyway:
+    image: flyway/flyway:10.20.1
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >-
+      -url=jdbc:postgresql://db:5432/marketplace
+      -user=marketplace
+      -password=marketplace
+      -connectRetries=30
+      migrate
+    volumes:
+      - ./db/migration:/flyway/sql:ro
+
+  codegen:
+    image: openapitools/openapi-generator-cli:v7.26.0
+    working_dir: /local
+    command:
+      - generate
+      - -i
+      - /local/src/main/resources/openapi/openapi.yaml
+      - -g
+      - python-fastapi
+      - -o
+      - /generated
+      - -t
+      - /local/templates/python-fastapi
+      - --additional-properties=packageName=marketplace_api,fastapiImplementationPackage=marketplace_impl,useExternalImplementationPackage=true,sourceFolder=src
+    volumes:
+      - ./:/local:ro
+      - generated_code:/generated
+
+  app:
+    build: .
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
+      codegen:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql+psycopg://marketplace:marketplace@db:5432/marketplace
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me-please-123456789}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-20}
+      REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-14}
+      ORDER_OPERATION_COOLDOWN_MINUTES: ${ORDER_OPERATION_COOLDOWN_MINUTES:-1}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin123!}
+    ports:
+      - "8080:8080"
+    volumes:
+      - generated_code:/generated:ro
+
+volumes:
+  postgres_data:
+  generated_code:

@@ -1,0 +1,39 @@
+# coding: utf-8
+
+{{>partial_header}}
+
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+
+from marketplace_impl.bootstrap import bootstrap_admin
+from marketplace_impl.errors import install_exception_handlers
+from marketplace_impl.logging_middleware import RequestLoggingMiddleware
+
+{{#apiInfo}}
+{{#apis}}
+from {{apiPackage}}.{{classFilename}} import router as {{classname}}Router
+{{/apis}}
+{{/apiInfo}}
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    bootstrap_admin()
+    yield
+
+
+app = FastAPI(
+    title="{{appName}}",
+    description="{{appDescription}}",
+    version="{{appVersion}}",
+    lifespan=lifespan,
+)
+
+app.add_middleware(RequestLoggingMiddleware)
+install_exception_handlers(app)
+
+{{#apiInfo}}
+{{#apis}}
+app.include_router({{classname}}Router)
+{{/apis}}
+{{/apiInfo}}

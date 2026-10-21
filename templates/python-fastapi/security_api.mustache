@@ -1,0 +1,22 @@
+# coding: utf-8
+
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from {{modelPackage}}.extra_models import TokenModel
+from marketplace_impl.security import authenticate_access_token
+
+{{#authMethods}}
+{{#isBasicBearer}}
+bearer_auth = HTTPBearer(auto_error=False)
+
+
+async def get_token_{{name}}(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_auth),
+) -> TokenModel:
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        from marketplace_impl.errors import ApiException
+        raise ApiException(401, "TOKEN_INVALID", "Bearer access token is required")
+    principal = authenticate_access_token(credentials.credentials)
+    return TokenModel(sub=str(principal.user_id))
+{{/isBasicBearer}}
+{{/authMethods}}
