@@ -253,15 +253,3 @@ WHERE operation_type = 'CREATE_ORDER';
 
 После этого повторить `POST /orders` для того же пользователя, пока его первый заказ всё ещё `CREATED`.
 
-## Где смотреть код на защите
-
-Если преподаватель просит “покажи ключевые решения”, открывай в таком порядке:
-
-1. `src/main/resources/openapi/openapi.yaml` — контракт, validation, errors, JWT security;
-2. `Makefile` / `docker-compose.yml` — воспроизводимая генерация;
-3. `db/migration/V1__init.sql` — схема, индексы, triggers;
-4. `marketplace_impl/api_impl.py` — CRUD, RBAC, транзакции заказов;
-5. `marketplace_impl/security.py` — access/refresh JWT;
-6. `marketplace_impl/logging_middleware.py` — JSON request logging.
-
-Подробная шпаргалка: `DEFENSE_CHEATSHEET.md`.
